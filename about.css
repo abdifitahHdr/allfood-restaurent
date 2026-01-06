@@ -1,0 +1,549 @@
+/* ================= RESET ================= */
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+a{
+  text-decoration: none;
+}
+
+img{
+  max-width: 100%;
+  display: block;
+}
+
+/* ================= HEADER / NAVBAR ================= */
+.header{
+  background: #fff;
+  width: 100%;
+  top: 0;
+  position: relative;
+}
+.nav a:hover {
+  color: #ff5600;
+}
+
+.nav-container{
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+  padding: 22px 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo{
+  height: 42px;
+}
+
+.nav a {
+  margin: 0 20px;
+  text-decoration: none;
+  color: #222;
+  font-size: 16px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  justify-content:space-between ;
+
+}
+
+.nav a.active{
+  color: #ff5600;
+}
+
+.order-btn{
+  padding: 10px 28px;
+  border: 1px solid #ff5600;
+  border-radius: 6px;
+  color: #222;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.order-btn:hover{
+  background: #ff5600;
+  color: #fff;
+}
+
+/* ================= ABOUT HERO ================= */
+.about-hero{
+  position: relative;
+  height: 70vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* HAL SAWIR – FLIPPED (LEFT ↔ RIGHT) */
+.about-hero::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image: url("./assets/img/gallery/section_bg03.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  transform: scaleX(-1); /* 👈 SAWIRKA WAA LA ROGAY */
+  z-index: 1;
+}
+
+/* QORAALKA */
+.about-text{
+  position: relative;
+  z-index: 2;
+
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.about-text h1{
+  font-size: 58px;
+  font-weight: 500;
+  color: #222;
+  font-family:  "Josefin Sans",sans-serif;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 1024px){
+  .about-text h1{
+    font-size: 48px;
+  }
+}
+
+@media (max-width: 768px){
+  .nav{
+    display: none;
+  }
+
+  .about-hero{
+    height: 60vh;
+  }
+
+  .about-text h1{
+    font-size: 38px;
+  }
+}
+/* ================= ABOUT SECOND SECTION ================= */
+.about-section{
+  padding: 100px 0;
+  background: #fff;
+}
+
+.about-container{
+  width: 90%;
+  max-width: 1200px;
+  margin: auto;
+
+  display: flex;
+  align-items: center;
+  gap: 80px;
+}
+
+/* IMAGE */
+.about-image{
+  flex: 1;
+}
+
+.about-image img{
+  width: 100%;
+  border-radius: 4px;
+}
+
+/* CONTENT */
+.about-content{
+  flex: 1;
+}
+
+.about-subtitle{
+  display: block;
+  color: #ff5600;
+  font-size: 14px;
+  margin-bottom: 12px;
+  top: -50px;
+}
+
+.about-content h2{
+  font-size: 35px;
+  margin-bottom: 10px;
+  line-height: 1.6;
+  font-weight: 700;
+  letter-spacing: 2;
+  color: #222;
+  margin-bottom: 24px;
+  font-family: "Josefin Sans",sans-serif;
+  justify-content: space-between;
+}
+
+.about-content p{
+  font-size: 13px;
+  line-height: 1.8;
+  color: #666;
+  margin-bottom: 18px;
+  max-width: 520px;
+}
+
+/* BUTTON */
+.about-btn{
+  display: inline-block;
+  margin-top: 25px;
+  padding: 14px 36px;
+
+  border: 1px solid #ff5600;
+  border-radius: 6px;
+
+  color: #222;
+  font-size: 14px;
+  transition: 0.3s;
+}
+
+.about-btn:hover{
+  background: #ff5600;
+  color: #fff;
+}
+
+/* ================= RESPONSIVE ================= */
+@media (max-width: 992px){
+  .about-container{
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  .about-content h2{
+    font-size: 34px;
+  }
+
+  .about-content p{
+    max-width: 100%;
+  }
+}
+
+/* ===== BOOKING SECTION ===== */
+.booking {
+  padding: 100px 0;
+  background: #f6f7f8;
+  text-align: center;
+  background-image: url("./assets/img/gallery/section_bg04.png");
+  
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  position: relative;
+}
+
+.booking-subtitle {
+  color: #ff5600;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.booking-title {
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 50px;
+    font-family: "Josefin Sans",sans-serif;
+
+}
+
+/* FORM */
+.booking-form {
+  max-width: 900px;
+  margin: auto;
+  background: #fff;
+  padding: 30px;
+  border-radius: 10px;
+
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.field select,
+.field input {
+  width: 100%;
+  padding: 16px 18px;
+  border: none;
+  background: #f6f6f6;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  color: #a3a3a3;
+}
+.field select{
+  color: #8d8d8d;
+}
+
+/* BUTTON */
+.booking-btn {
+  background: #ff5600;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+}
+.booking-btn:hover{
+  background-color: #c64403;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .booking-form {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-title {
+    font-size: 32px;
+  }
+}
+/* ===== ABOUT SECTION ===== */
+.about {
+  padding: 120px 0;
+  background: #fff;
+}
+
+.about-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.about-subtitle {
+  color: #ff5600;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 15px;
+    font-family: "Josefin Sans",sans-serif;
+
+}
+
+.about-title {
+  font-size: 42px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 25px;
+    font-family: "Josefin Sans",sans-serif;
+
+}
+
+.about-desc {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 40px;
+  max-width: 500px;
+}
+
+/* FEATURES */
+.about-features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.feature {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.feature .icon {
+  font-size: 28px;
+  color: #ff5600;
+}
+
+.feature p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* IMAGE */
+.about-image img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .about-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .about-title {
+    font-size: 32px;
+  }
+}
+
+/* ===== NEWSLETTER SECTION ===== */
+.newsletter {
+  padding: 160px 0;
+  background-image: url("./assets/img/gallery/section_bg03.png");
+  background-size: cover;
+  background-position: left center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* overlay khafiif ah */
+.newsletter::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+/* content */
+.newsletter-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 15px;
+}
+
+.newsletter-content {
+  max-width: 520px;
+  margin-left: auto;
+}
+
+.newsletter-subtitle {
+  color: #ff5600;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 15px;
+}
+
+.newsletter-title {
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 25px;
+}
+
+.newsletter-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #555;
+  margin-bottom: 40px;
+}
+
+/* FORM */
+.newsletter-form {
+  display: flex;
+  max-width: 480px;
+}
+
+.newsletter-form input {
+  flex: 1;
+  padding: 16px 18px;
+  border: none;
+  background: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.newsletter-form button {
+  padding: 16px 32px;
+  background: #ff5600;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+.newsletter-form button:hover{
+  background-color: #c64403;
+}
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .newsletter {
+    background-position: center;
+    padding: 120px 0;
+  }
+
+  .newsletter-content {
+    margin: auto;
+    text-align: center;
+  }
+
+  .newsletter-form {
+    margin: auto;
+  }
+}
+/* ===== SERVICES SECTION ===== */
+.services {
+  padding: 120px 0;
+  background: #fff;
+  text-align: center;
+}
+
+.services-subtitle {
+  color: #ff5600;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 10px;
+}
+
+.services-title {
+  font-size: 42px;
+  font-weight: 800;
+  margin-bottom: 70px;
+}
+
+/* GRID */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+}
+
+/* BOX */
+.service-box {
+  padding: 60px 40px;
+}
+.service-box:hover{
+  background: #fafafa;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.service-box.active {
+  background: #fafafa;
+}
+
+.service-icon {
+  font-size: 38px;
+  margin-bottom: 25px;
+}
+
+.service-box h4 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.service-box p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #666;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .services-title {
+    font-size: 32px;
+  }
+}
