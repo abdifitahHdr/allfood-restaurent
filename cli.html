@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clinic Appointment Organizer</title>
+
+    <!-- Icons (no frameworks, just icon font) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+      
+
+      
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="header-inner">
+            <div class="brand">
+                <!-- LOGO PLACEHOLDER: change src to your real logo -->
+                <div class="logo" aria-hidden="true">
+                    <img src="./loogo.jpg" alt="Clinic logo">
+                </div>
+                <div>
+                    <h1>Clinic Appointment Organizer</h1>
+                    <p>Manage your clinic schedule efficiently</p>
+                </div>
+            </div>
+
+            <!-- <nav aria-label="Primary">
+                <span class="pill"><i class="fa-solid fa-house"></i> Home</span>
+                <span class="pill"><i class="fa-solid fa-calendar-check"></i> Appointments</span>
+                <span class="pill"><i class="fa-solid fa-circle-question"></i> Help</span>
+            </nav> -->
+        </div>
+    </header>
+
+    <main>
+        <div class="grid">
+            <!-- LEFT -->
+            <section>
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-calendar-plus"></i> New Appointment</h2>
+                        <p class="card-subtitle">Add, edit, and save appointments (Local Storage)</p>
+                    </div>
+
+                    <div class="card-body">
+                        <form id="apptForm" novalidate>
+                            <label class="label" for="patientName">Patient Name</label>
+                            <input class="input" id="patientName" name="patientName" placeholder="Enter patient name"
+                                autocomplete="name" />
+
+                            <div class="row">
+                                <div>
+                                    <label class="label" for="apptDate">Date</label>
+                                    <input class="input" id="apptDate" name="apptDate" type="date" />
+                                </div>
+                                <div>
+                                    <label class="label" for="apptTime">Time</label>
+                                    <input class="input" id="apptTime" name="apptTime" type="time" />
+                                </div>
+                            </div>
+
+                            <div class="error" id="formError" role="alert"></div>
+                            <div class="success" id="formSuccess" role="status"></div>
+
+                            <button class="btn" type="submit">
+                                <i id="submitIcon" class="fa-solid fa-plus"></i>
+                                <span id="submitText">Add Appointment</span>
+                            </button>
+
+                            <button class="btn secondary" type="button" id="cancelEditBtn"
+                                style="display:none; margin-top:10px;">
+                                Cancel Edit
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card today">
+                    <div class="card-header">
+                        <h2 class="card-title"><i class="fa-solid fa-sun"></i> Today's Appointments</h2>
+                        <p class="card-subtitle">Appointments scheduled for today</p>
+                    </div>
+                    <div class="card-body" style="padding-top: 12px;">
+                        <div id="todayList" style="display:flex; flex-direction:column; gap:12px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RIGHT -->
+            <section class="card">
+                <div class="right-head">
+                    <h2 class="card-title" style="margin:0;"><i class="fa-solid fa-list"></i> All Appointments</h2>
+                    <div class="badge" id="totalBadge">0</div>
+                </div>
+
+                <div class="list" id="allList"></div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="foot-pill">© <span id="year"></span> Clinic Appointment Organizer</div>
+        <div class="foot-pill"><i class="fa-solid fa-database"></i> Data saved locally in your browser</div>
+    </footer>
+
+    <script>
+        /* ======================
+           REQUIREMENTS CHECK
+           - Layout: header/main/footer ✅
+           - Responsive ✅
+           - Form validation ✅
+           - Add/Edit/Delete/Display ✅
+           - localStorage ✅
+           - if/else + loops + arrays/objects ✅
+           - 2+ reusable functions ✅
+        ====================== */
+
+        const STORAGE_KEY = "clinic_appointments_blue_modern_v1";
+
+        // DOM
+        const form = document.getElementById("apptForm");
+        const patientName = document.getElementById("patientName");
+        const apptDate = document.getElementById("apptDate");
+        const apptTime = document.getElementById("apptTime");
+
+        const formError = document.getElementById("formError");
+        const formSuccess = document.getElementById("formSuccess");
+
+        const allList = document.getElementById("allList");
+        const todayList = document.getElementById("todayList");
+        const totalBadge = document.getElementById("totalBadge");
+
+        const submitText = document.getElementById("submitText");
+        const submitIcon = document.getElementById("submitIcon");
+        const cancelEditBtn = document.getElementById("cancelEditBtn");
+
+        // State (array of objects)
+        let appointments = loadAppointments(); // [{id,name,dateISO,time,createdAt}]
+        let editId = null;
+
+        // Reusable function #1
+        function showMessage(type, msg) {
+            formError.style.display = "none";
+            formSuccess.style.display = "none";
+
+            if (type === "error") {
+                formError.textContent = msg;
+                formError.style.display = "block";
+            } else if (type === "success") {
+                formSuccess.textContent = msg;
+                formSuccess.style.display = "block";
+            }
+        }
+
+        // Reusable function #2
+        function formatDate(dateISO) {
+            const d = new Date(dateISO + "T00:00:00");
+            return d.toLocaleDateString(undefined, { month: "short", day: "2-digit", year: "numeric" });
+        }
+
+        function formatTime(t) {
+            const [hh, mm] = t.split(":").map(Number);
+            const d = new Date();
+            d.setHours(hh, mm, 0, 0);
+            return d.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" });
+        }
+
+        function todayISO() {
+            const d = new Date();
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+        }
+
+        function generateId() {
+            return "appt_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+        }
+
+        function saveAppointments() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appointments));
+        }
+
+        function loadAppointments() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function resetForm() {
+            form.reset();
+            editId = null;
+            submitText.textContent = "Add Appointment";
+            submitIcon.className = "fa-solid fa-plus";
+            cancelEditBtn.style.display = "none";
+            showMessage("none", "");
+            patientName.focus();
+        }
+
+        function setEditMode(appt) {
+            editId = appt.id;
+            patientName.value = appt.name;
+            apptDate.value = appt.dateISO;
+            apptTime.value = appt.time;
+
+            submitText.textContent = "Save Changes";
+            submitIcon.className = "fa-solid fa-pen";
+            cancelEditBtn.style.display = "block";
+            showMessage("success", "Edit mode: update the fields and click “Save Changes”.");
+        }
+
+        function validateForm() {
+            const name = patientName.value.trim();
+            const date = apptDate.value;
+            const time = apptTime.value;
+
+            // if/else requirement ✅
+            if (!name || !date || !time) {
+                return { ok: false, message: "Please fill in all fields (Name, Date, Time)." };
+            } else {
+                const chosen = new Date(date + "T" + time + ":00");
+                const now = new Date();
+                if (chosen.getTime() < now.getTime() - 60 * 1000) {
+                    return { ok: false, message: "Selected date/time is in the past. Please choose a future time." };
+                }
+            }
+            return { ok: true, message: "" };
+        }
+
+        function render() {
+            // Sort upcoming first
+            appointments.sort((a, b) => {
+                const ad = new Date(a.dateISO + "T" + a.time + ":00");
+                const bd = new Date(b.dateISO + "T" + b.time + ":00");
+                if (ad.getTime() !== bd.getTime()) return ad - bd;
+                return (a.createdAt || 0) - (b.createdAt || 0);
+            });
+
+            totalBadge.textContent = String(appointments.length);
+
+            // All list (loop requirement ✅)
+            if (appointments.length === 0) {
+                allList.innerHTML = `
+          <div class="item" style="justify-content:center; text-align:center;">
+            <div style="color: rgba(7,17,26,.62); font-size: 14px; padding: 6px 0;">
+              No appointments yet. Add your first one on the left.
+            </div>
+          </div>`;
+            } else {
+                let html = "";
+                for (let i = 0; i < appointments.length; i++) {
+                    const a = appointments[i];
+                    html += `
+            <div class="item" data-id="${a.id}">
+              <div class="item-left">
+                <div class="avatar" aria-hidden="true">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div style="min-width:0;">
+                  <h4>${escapeHtml(a.name)}</h4>
+                  <div class="meta">
+                    <span><i class="fa-regular fa-calendar"></i> ${formatDate(a.dateISO)}</span>
+                    <span><i class="fa-regular fa-clock"></i> ${formatTime(a.time)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="actions">
+                <button class="icon-btn" type="button" data-action="edit" aria-label="Edit appointment">
+                  <i class="fa-solid fa-pen"></i>
+                </button>
+                <button class="icon-btn danger" type="button" data-action="delete" aria-label="Delete appointment">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
+            </div>
+          `;
+                }
+                allList.innerHTML = html;
+            }
+
+            // Today's list
+            const tISO = todayISO();
+            const todays = appointments.filter(a => a.dateISO === tISO);
+
+            if (todays.length === 0) {
+                todayList.innerHTML = `
+          <div class="item" style="padding:12px 12px; background: rgba(255,255,255,.72);">
+            <div style="color: rgba(7,17,26,.62); font-size: 14px;">
+              No appointments for today (${formatDate(tISO)}).
+            </div>
+          </div>`;
+            } else {
+                let tHtml = "";
+                for (const a of todays) {
+                    tHtml += `
+            <div class="item" style="padding: 12px 12px;">
+              <div class="item-left">
+                <div class="avatar" aria-hidden="true">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div style="min-width:0;">
+                  <h4 style="margin-top:2px;">${escapeHtml(a.name)}</h4>
+                  <div class="meta" style="margin-top:6px;">
+                    <span><i class="fa-regular fa-clock"></i> ${formatTime(a.time)}</span>
+                  </div>
+                </div>
+              </div>
+              <div style="font-weight:900; color: rgba(3,4,94,.92); white-space:nowrap;">
+                ${formatTime(a.time)}
+              </div>
+            </div>
+          `;
+                }
+                todayList.innerHTML = tHtml;
+            }
+
+            document.getElementById("year").textContent = String(new Date().getFullYear());
+        }
+
+        // Submit: Add/Edit
+        form.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const v = validateForm();
+            if (!v.ok) {
+                showMessage("error", v.message);
+                return;
+            }
+
+            const data = {
+                id: editId ? editId : generateId(),
+                name: patientName.value.trim(),
+                dateISO: apptDate.value,
+                time: apptTime.value,
+                createdAt: editId ? (appointments.find(a => a.id === editId)?.createdAt || Date.now()) : Date.now()
+            };
+
+            if (editId) {
+                const idx = appointments.findIndex(a => a.id === editId);
+                if (idx !== -1) {
+                    appointments[idx] = data;   // EDIT
+                    saveAppointments();
+                    render();
+                    showMessage("success", "Appointment updated successfully.");
+                    resetForm();
+                } else {
+                    showMessage("error", "Edit failed: appointment not found.");
+                }
+            } else {
+                appointments.push(data);      // ADD
+                saveAppointments();
+                render();
+                showMessage("success", "Appointment added and saved.");
+                resetForm();
+            }
+        });
+
+        cancelEditBtn.addEventListener("click", () => resetForm());
+
+        // Edit/Delete (event delegation)
+        allList.addEventListener("click", (e) => {
+            const btn = e.target.closest("button");
+            if (!btn) return;
+
+            const action = btn.getAttribute("data-action");
+            const item = btn.closest(".item");
+            if (!item) return;
+
+            const id = item.getAttribute("data-id");
+            const appt = appointments.find(a => a.id === id);
+            if (!appt) return;
+
+            if (action === "edit") {
+                setEditMode(appt);
+            } else if (action === "delete") {
+                const ok = confirm(`Delete appointment for "${appt.name}" on ${formatDate(appt.dateISO)} at ${formatTime(appt.time)}?`);
+                if (ok) {
+                    appointments = appointments.filter(a => a.id !== id); // DELETE
+                    saveAppointments();
+                    render();
+                    if (editId === id) resetForm();
+                    showMessage("success", "Appointment deleted.");
+                }
+            }
+        });
+
+        // Init
+        render();
+        apptDate.min = todayISO(); // UX: block past date
+    </script>
+</body>
+
+</html>
